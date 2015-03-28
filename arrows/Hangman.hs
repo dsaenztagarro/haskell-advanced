@@ -31,3 +31,23 @@ runCircuit _ [] = []
 runCircuit cir (x:xs) =
     let (cir', x') = unCircuit cir x
     in x' : runCircuit cir' xs
+
+-- Better
+-- runCircuit cir inputs =
+--     snd $ mapAccumL (\cir x -> unCircuit cir x) cir inputs
+
+-- After eta-reduction
+-- runCircuit cir inputs =
+--     snd $ mapAccumL unCircuit cir inputs
+
+-- Circuit primitives
+
+-- / Accumulator that outputs a value determined by the supplied function
+accum :: acc -> (a -> acc -> (b, acc)) -> Circuit a b
+accum acc f = Circuit $ \input ->
+    let (output, acc') = input `f` acc
+    in (accum acc' f, output)
+
+-- / Accumulator that outputs the accumulator value
+accum' :: b -> (a -> b -> b) -> Circuit a b
+accum' acc f = accum acc (\a b -> let b' = a `f` b in (b', b'))
