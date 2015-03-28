@@ -1,0 +1,5 @@
+# Install
+
+```
+cabal install random
+```
