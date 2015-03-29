@@ -15,3 +15,9 @@ total = accum' 0 (+)
 -- [1,1,2,2,2,4]
 -- *Main>
 ```
+
+# Kleisli
+
+```
+count'' "the" "fixture.txt"
+```
