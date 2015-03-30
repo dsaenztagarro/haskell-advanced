@@ -16,8 +16,12 @@ total = accum' 0 (+)
 -- *Main>
 ```
 
-# Kleisli
+# Examples
 
-```
+```haskell
+:load arrows/Kleisli
 count'' "the" "fixture.txt"
+
+:load arrows/Kleisli2
+runKleisli (count "the") "fixture.txt"
 ```
