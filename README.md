@@ -24,4 +24,5 @@ count'' "the" "fixture.txt"
 
 :load arrows/Kleisli2
 runKleisli (count "the") "fixture.txt"
+runSF (arr (+1)) [1..5]
 ```
