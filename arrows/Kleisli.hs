@@ -10,7 +10,7 @@ count' w = (>>=print) .
            liftM (length . filter (==w) . words) .
            readFile
 
--- Using Arrows (without using Control.Arrow)
+-- Parameterising Kleisli over monads
 
 type Kleisli m a b = a -> m b
 
