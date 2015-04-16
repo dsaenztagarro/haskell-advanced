@@ -2,7 +2,7 @@ import Control.Monad
 
 data Target = Monster
             | NPC
-            deriving (Eq)
+            deriving (Eq, Show)
 
 swingAxeBack value = print ("SwingAxeBack " ++ (show value))
 
@@ -31,17 +31,27 @@ unitAttack target todo = do
 
 newtype ContT r m a = ContT { runContT :: (a -> m r) -> m r }
 
-unitAttack''' :: Target -> ContT () IO Target
-unitAttack''' target = ContT $ \todo -> do
+unitAttack' :: Target -> ContT () IO Target
+unitAttack' target = ContT $ \todo -> do
     swingAxeBack 60
     valid <- isTargetValid target
     if valid
     then todo target
     else sayUhOh
 
--- ghci> runContT (unitAttack Monster) $ attack
+-- ghci> runContT (unitAttack' Monster) $ attack
 
 -- Example 2: Variable arguments
+
+damage :: Target -> IO ()
+damage t = print ("Continue#Damage " ++ show t)
+
+swingBack :: Int -> IO ()
+swingBack n = print ("Continue#SwingBack " ++ show n)
+
+continue :: Hole -> IO ()
+continue (Swing n) = swingBack n
+continue (Attack t) = damage t
 
 data Hole = Swing Int | Attack Target
 
@@ -52,3 +62,5 @@ unitAttack2 target = ContT $ \k -> do
     if valid
     then k (Attack target)
     else sayUhOh
+
+-- ghci> runContT (unitAttack2 Monster) $ continue
