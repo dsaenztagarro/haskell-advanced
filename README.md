@@ -28,3 +28,10 @@ runSF (arr (+1)) [1..5]
 runSF (delay 0) [1..5]
 runSF (arr id &&& delay 0) [1..5]
 ```
+
+# Bibliography
+
+- Programming with Arrows (John Hughes). Department of Computer Science and 
+  Engineering, Chalmers University of Technology, S-41296 Sweden.
+
+- [The Continuation Monad](http://www.haskellforall.com/2012/12/the-continuation-monad.html)

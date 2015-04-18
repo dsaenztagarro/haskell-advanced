@@ -1,3 +1,5 @@
+{-# LANGUAGE InstanceSigs, RankNTypes #-}
+
 import Control.Monad
 
 data Target = Monster
@@ -12,8 +14,8 @@ isTargetValid target = return $ target == Monster
 sayUhOh :: IO ()
 sayUhOh = print "sayUhOh!"
 
-attack :: Target -> IO ()
-attack target = if target == Monster
+handler :: Target -> IO ()
+handler target = if target == Monster
                    then print "Monster attacked!"
                    else print "NPC attacked!"
 
@@ -27,7 +29,7 @@ unitAttack target todo = do
     then todo target
     else sayUhOh
 
--- ghci> unitAttack Monster attack
+-- ghci> unitAttack Monster handler
 
 newtype ContT r m a = ContT { runContT :: (a -> m r) -> m r }
 
@@ -39,7 +41,7 @@ unitAttack' target = ContT $ \todo -> do
     then todo target
     else sayUhOh
 
--- ghci> runContT (unitAttack' Monster) $ attack
+-- ghci> runContT (unitAttack' Monster) $ handler
 
 -- Example 2: Variable arguments
 
@@ -64,3 +66,26 @@ unitAttack2 target = ContT $ \k -> do
     else sayUhOh
 
 -- ghci> runContT (unitAttack2 Monster) $ continue
+
+-- Example 3: Kleisli Arrows
+
+newHandler :: Int -> IO ()
+newHandler n = print ("newHandler " ++ show n)
+
+registerUnitBeingAttacked :: IO ()
+registerUnitBeingAttacked = print "halfAssedCompletion#registerUnitBeingAttacked"
+
+halfAssedCompletion :: Target -> ContT () IO Int
+halfAssedCompletion target = ContT $ \todo -> do
+    registerUnitBeingAttacked
+    todo 40
+
+instance Monad (ContT r m) where
+    return a = ContT ($ a)
+
+    -- (>>=) :: ContT r m a -> (a -> ContT r m b) -> ContT r m b
+    -- a >>= f = ContT $ runContT a . flip (runContT . f)
+    m >>= k  = ContT $ \c -> runContT m (\a -> runContT (k a) c)
+
+
+-- unitAttack' >=> halfAssedCompletion :: Target -> ContT () IO Int
