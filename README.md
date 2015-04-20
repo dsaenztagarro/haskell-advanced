@@ -4,9 +4,10 @@
 cabal install random
 ```
 
-# Hangman
+# Examples
 
 ```haskell
+:load arrows/Hangman
 total :: Num a => Circuit a a
 total = accum' 0 (+)
 
@@ -14,11 +15,7 @@ total = accum' 0 (+)
 -- *Main> runCircuit total [1,0,1,0,0,2]
 -- [1,1,2,2,2,4]
 -- *Main>
-```
 
-# Examples
-
-```haskell
 :load arrows/Kleisli
 count'' "the" "fixture.txt"
 
@@ -31,7 +28,12 @@ runSF (arr id &&& delay 0) [1..5]
 
 # Bibliography
 
+- [Stephen's Arrow Tutorial](http://en.wikibooks.org/wiki/Haskell/Arrow_tutorial)
+
+- [The Continuation Monad](http://www.haskellforall.com/2012/12/the-continuation-monad.html)
+
+### Papers
+
 - Programming with Arrows (John Hughes). Department of Computer Science and 
   Engineering, Chalmers University of Technology, S-41296 Sweden.
 
-- [The Continuation Monad](http://www.haskellforall.com/2012/12/the-continuation-monad.html)
