@@ -32,6 +32,8 @@ runSF (arr id &&& delay 0) [1..5]
 
 - [The Continuation Monad](http://www.haskellforall.com/2012/12/the-continuation-monad.html)
 
+- [Why free monads matter](http://www.haskellforall.com/2012/12/the-continuation-monad.html)
+
 ### Papers
 
 - Programming with Arrows (John Hughes). Department of Computer Science and 

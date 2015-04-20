@@ -1,3 +1,5 @@
+import Control.Monad
+
 data Toy b next = Output b next
                 | Bell next
                 | Done
@@ -75,3 +77,58 @@ showProgram (Pure r) = "return " ++ show r ++ "\n"
 pretty :: (Show a, Show r) => Free (Toy a) r -> IO ()
 pretty = putStr . showProgram
 
+-- >>> pretty (output 'A')
+-- output 'A'
+-- return ()
+--
+-- >>> pretty (return 'A' >>= output)
+-- output 'A'
+-- return ()
+--
+-- >>> pretty (output 'A' >>= return)
+-- output 'A'
+-- return ()
+--
+-- >>> pretty ((output 'A' >> done) >> output 'C')
+-- output 'A'
+-- done
+--
+-- >>> pretty (output 'A' >> (done >> output 'C'))
+-- output 'A'
+-- done
+
+-- Concurrency
+
+data Thread m r = Atomic (m (Thread m r)) | Return r
+
+atomic :: (Monad m) => m a -> Thread m a
+atomic m = Atomic $ liftM Return m
+
+instance (Monad m) => Monad (Thread m) where
+    return = Return
+    (Atomic m) >>= f = Atomic (liftM (>>= f) m)
+    (Return r) >>= f = f r
+
+thread1 :: Thread IO ()
+thread1 = do
+    atomic $ print 1
+    atomic $ print 2
+
+thread2 :: Thread IO ()
+thread2 = do
+    str <- atomic $ getLine
+    atomic $ putStrLn str
+
+interleave :: (Monad m) => Thread m r -> Thread m r -> Thread m r
+interleave (Atomic m1) (Atomic m2) = do
+    next1 <- atomic m1
+    next2 <- atomic m2
+    interleave next1 next2
+interleave t1 (Return _) = t1
+interleave (Return _) t2 = t2
+
+runThread :: (Monad m) => Thread m r -> m r
+runThread (Atomic m) = m >>= runThread
+runThread (Return r) = return r
+
+-- runThread (interleave thread1 thread2)
